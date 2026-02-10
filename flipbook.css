@@ -1,104 +1,63 @@
+/* ===========================
+   Global Reset
+=========================== */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
   background: transparent;
+  font-family: sans-serif;
 }
 
-/* Flipbook container */
+/* ===========================
+   Flipbook container
+=========================== */
 #flipbook {
   width: 1000px;
   height: 607px;
   margin: 0 auto;
+  outline: none; /* remove focus outline */
   position: relative;
-  overflow: visible;
+  perspective: 1500px; /* subtle 3D effect */
 }
 
-/* Individual pages */
+/* ===========================
+   Individual pages
+=========================== */
 .page {
   background: white;
-  position: relative;
+  box-shadow: 0 0 8px rgba(0,0,0,0.15); /* softer shadow */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Shadows outside pages */
-.page::before,
-.page::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 15px;
-  pointer-events: none;
-}
-
-.page::before {
-  left: -2px;
-  box-shadow: -3px 0 8px rgba(0,0,0,0.03);
-}
-
-.page::after {
-  right: -2px;
-  box-shadow: 3px 0 8px rgba(0,0,0,0.03);
-}
-
-/* Page images */
+/* ===========================
+   Page images
+=========================== */
 .page img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  image-rendering: auto;
-  image-rendering: optimizeQuality;
-  image-rendering: -webkit-optimize-contrast;
+  pointer-events: none; /* ensures clicks register on edges for page flip */
 }
 
-/* Remove Turn.js internal spacing/gaps */
-#flipbook .turn-page,
-#flipbook .turn-page-wrapper {
-  margin: 0 !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  background: none !important;
-}
-
-/* Edge click zones for desktop */
-#flipbook::before,
-#flipbook::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  width: 80px;
-  height: 100%;
-  cursor: pointer;
-  z-index: 10;
-}
-
-#flipbook::before {
-  left: 0;
-}
-
-#flipbook::after {
-  right: 0;
-}
-
-/* Hover highlight for desktop */
-@media (hover: hover) and (pointer: fine) {
-  #flipbook::before:hover,
-  #flipbook::after:hover {
-    background: rgba(0, 0, 0, 0.03);
-  }
-}
-
-/* Responsive mobile scaling */
-@media (max-width: 1024px) {
+/* ===========================
+   Mobile responsiveness
+=========================== */
+@media screen and (max-width: 768px) {
   #flipbook {
-    width: 100%;
-    height: auto;
+    width: 90vw; /* 90% of viewport width */
+    height: calc(90vw / 1.647); /* preserve spread aspect ratio */
   }
+}
 
-  #flipbook .page img {
-    width: 100%;
-    height: auto;
+@media screen and (max-width: 480px) {
+  #flipbook {
+    width: 95vw; 
+    height: calc(95vw / 1.647); 
   }
 }
