@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF‑8">
+  <meta name="viewport" content="width=device‑width, initial‑scale=1.0">
   <title>Portfolio Flipbook</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="flipbook.css">
-
-  <!-- jQuery (Turn.js dependency) -->
+  
+  <!-- jQuery and Turn.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="turnjs/turn.min.js"></script>
 </head>
@@ -17,66 +16,34 @@
   <div id="flipbook"></div>
 
   <script>
-    const totalPages = 28;
+    document.addEventListener('DOMContentLoaded', function() {
+      const totalPages = 28;
+      const flipbook = document.getElementById('flipbook');
 
-    // create pages dynamically
-    for (let i = 0; i < totalPages; i++) {
-      const pageNumber = String(i).padStart(3, '0');
-      const pageDiv = document.createElement('div');
-      pageDiv.className = 'page';
+      // generate pages
+      for (let i = 0; i < totalPages; i++) {
+        const div = document.createElement('div');
+        div.className = 'page';
 
-      const img = document.createElement('img');
-      img.src = `pages/page-${pageNumber}.png`;
-      img.alt = `Page ${i+1}`;
+        const img = document.createElement('img');
+        img.src = `pages/page‑${String(i).padStart(3, '0')}.png`;
+        img.alt = `Page ${i + 1}`;
 
-      pageDiv.appendChild(img);
-      document.getElementById('flipbook').appendChild(pageDiv);
-    }
+        div.appendChild(img);
+        flipbook.appendChild(div);
+      }
 
-    function initFlipbook() {
-      const containerWidth = Math.min(window.innerWidth * 0.95, 1000);
-      const pageHeight = containerWidth * (607 / 1000);
-
-      $('#flipbook').turn('destroy'); // reset
-
+      // only now initialize Turn.js
       $('#flipbook').turn({
-        width: containerWidth,
-        height: pageHeight,
+        width: Math.min(window.innerWidth * 0.9, 1000),
+        height: Math.min(window.innerWidth * 0.9, 1000) * (607 / 1000),
         autoCenter: true,
-        display: 'double', // show spreads
-        acceleration: true,
-        gradients: true
+        display: 'double',
+        gradients: true,
+        acceleration: true
       });
-    }
-
-    $(window).on('load resize orientationchange', initFlipbook);
-
-    // arrow keys
-    $(document).keydown(function(e) {
-      if (e.key === "ArrowRight") $('#flipbook').turn('next');
-      if (e.key === "ArrowLeft") $('#flipbook').turn('previous');
     });
-
-    // touch swipe
-    let startX = null;
-    $('#flipbook').on('touchstart', function(e) {
-      startX = e.originalEvent.touches[0].clientX;
-    });
-    $('#flipbook').on('touchend', function(e) {
-      if (!startX) return;
-      const endX = e.originalEvent.changedTouches[0].clientX;
-      if (endX - startX > 50) $('#flipbook').turn('previous');
-      if (startX - endX > 50) $('#flipbook').turn('next');
-      startX = null;
-    });
-
-    // edge click
-    $('#flipbook').on('click', '.page', function(e) {
-      const w = $(this).width();
-      if (e.offsetX < w * 0.2) $('#flipbook').turn('previous');
-      if (e.offsetX > w * 0.8) $('#flipbook').turn('next');
-    });
-
   </script>
+
 </body>
 </html>
