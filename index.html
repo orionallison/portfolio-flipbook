@@ -1,75 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Portfolio Flipbook</title>
+<script>
+const totalPages = 28;
 
-  <link rel="stylesheet" href="flipbook.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="turnjs/turn.min.js"></script>
-</head>
+for (let i = 0; i < totalPages; i++) {
+  const pageNumber = String(i).padStart(3, '0');
+  const page = document.createElement('div');
+  page.className = 'page';
 
-<body>
+  const img = document.createElement('img');
+  img.src = `pages/page-${pageNumber}.png`;
+  img.alt = `Page ${i + 1}`;
 
-  <div id="flipbook"></div>
+  page.appendChild(img);
+  document.getElementById('flipbook').appendChild(page);
+}
 
-  <script>
-    const totalPages = 28;
+function initFlipbook() {
+  const container = $('#flipbook');
+  const parentWidth = container.parent().width();
+  const aspectRatio = 1000 / 607;
+  const height = parentWidth / aspectRatio;
 
-    for (let i = 0; i < totalPages; i++) {
-      const pageNumber = String(i).padStart(3, '0');
-      const page = document.createElement('div');
-      page.className = 'page';
+  // Determine display mode based on screen width
+  const displayMode = (parentWidth < 800) ? 'single' : 'double';
 
-      const img = document.createElement('img');
-      img.src = `pages/page-${pageNumber}.png`;
-      img.alt = `Page ${i + 1}`;
+  container.turn({
+    width: parentWidth,
+    height: height,
+    autoCenter: true,
+    display: displayMode,
+    gradients: true,
+    acceleration: true
+  });
+}
 
-      page.appendChild(img);
-      document.getElementById('flipbook').appendChild(page);
+$(window).on('load resize', function() {
+  if ($('#flipbook').data('turn')) {
+    $('#flipbook').turn('destroy').empty(); // destroy previous instance
+  }
+  initFlipbook();
+});
+
+// Keyboard navigation: always advance one page at a time
+$(document).keydown(function(e) {
+  if ($('#flipbook').data('turn')) {
+    if (e.key === "ArrowRight") {
+      $('#flipbook').turn('next');
+    } else if (e.key === "ArrowLeft") {
+      $('#flipbook').turn('previous');
     }
-
-    function initFlipbook() {
-      const container = $('#flipbook');
-      const containerWidth = container.parent().width(); // use parent width for responsive scaling
-      const aspectRatio = 1000 / 607; // spread aspect ratio
-      const height = containerWidth / aspectRatio;
-
-      container.turn({
-        width: containerWidth,
-        height: height,
-        autoCenter: true,
-        gradients: true,
-        acceleration: true,
-        display: 'double',  // show spreads
-        when: {
-          turned: function(e, page) {
-            // optional: you can trigger any events when pages turn
-          }
-        }
-      });
-    }
-
-    $(window).on('load resize', function() {
-      if ($('#flipbook').data('turn')) {
-        $('#flipbook').turn('destroy').empty(); // destroy previous instance
-      }
-
-      initFlipbook();
-    });
-
-    // Keyboard navigation
-    $(document).keydown(function(e) {
-      if ($('#flipbook').data('turn')) {
-        if (e.key === "ArrowRight") {
-          $('#flipbook').turn('next');
-        } else if (e.key === "ArrowLeft") {
-          $('#flipbook').turn('previous');
-        }
-      }
-    });
-  </script>
-
-</body>
-</html>
+  }
+});
+</script>
