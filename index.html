@@ -20,33 +20,43 @@
   <div id="flipbook"></div>
 
   <script>
-    /* ===========================
-       EDIT ONLY THIS LINE
-       =========================== */
+    $(document).ready(function() {
+      const totalPages = 28; // ← update if you add/remove pages
 
-    const totalPages = 28; // ← CHANGE THIS NUMBER
+      // Generate pages dynamically
+      for (let i = 0; i < totalPages; i++) {
+        const pageNumber = String(i).padStart(3, '0');
+        const page = document.createElement('div');
+        page.className = 'page';
 
-    /* ===========================
-       DO NOT EDIT BELOW
-       =========================== */
+        const img = document.createElement('img');
+        img.src = `pages/page-${pageNumber}.png`;
+        img.alt = `Page ${i + 1}`;
 
-    for (let i = 0; i < totalPages; i++) {
-      const pageNumber = String(i).padStart(3, '0');
-      const page = document.createElement('div');
-      page.className = 'page';
+        page.appendChild(img);
+        document.getElementById('flipbook').appendChild(page);
+      }
 
-      const img = document.createElement('img');
-      img.src = `pages/page-${pageNumber}.png`;
-      img.alt = `Page ${i + 1}`;
+      // Initialize Turn.js
+      $('#flipbook').turn({
+        width: $('#flipbook').width(),
+        height: $('#flipbook').height(),
+        autoCenter: false,
+        gradients: true,
+        acceleration: true,
+        display: 'double',
+        elevation: 50,
+        page: 1,
+        duration: 600,
+        turnCorners: 'bl,br,tl,tr',
+        hardwareAcceleration: true
+      });
 
-      page.appendChild(img);
-      document.getElementById('flipbook').appendChild(page);
-    }
-
-    $('#flipbook').turn({
-      width: 1000,
-      height: 607,
-      autoCenter: false
+      // Arrow key navigation
+      $(document).keydown(function(e){
+        if(e.keyCode == 37) $('#flipbook').turn('previous'); // left arrow
+        if(e.keyCode == 39) $('#flipbook').turn('next');     // right arrow
+      });
     });
   </script>
 
