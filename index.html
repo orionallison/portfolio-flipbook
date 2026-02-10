@@ -1,95 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio Flipbook</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="flipbook.css">
 
-  <!-- jQuery (required for Turn.js) -->
+  <!-- jQuery (Turn.js dependency) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-  <!-- Turn.js -->
   <script src="turnjs/turn.min.js"></script>
 </head>
-
 <body>
 
-  <div id="flipbook-container">
-    <div id="flipbook"></div>
-  </div>
+  <div id="flipbook"></div>
 
   <script>
-    const totalPages = 28; // your number of pages
+    const totalPages = 28;
 
-    // create pages
+    // create pages dynamically
     for (let i = 0; i < totalPages; i++) {
       const pageNumber = String(i).padStart(3, '0');
-      const page = document.createElement('div');
-      page.className = 'page';
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+
       const img = document.createElement('img');
       img.src = `pages/page-${pageNumber}.png`;
-      img.alt = `Page ${i + 1}`;
-      page.appendChild(img);
-      document.getElementById('flipbook').appendChild(page);
+      img.alt = `Page ${i+1}`;
+
+      pageDiv.appendChild(img);
+      document.getElementById('flipbook').appendChild(pageDiv);
     }
 
-    // responsive Turn.js
     function initFlipbook() {
-      const containerWidth = document.getElementById('flipbook-container').offsetWidth;
-      const pageHeight = containerWidth * (607 / 1000); // maintain aspect ratio
+      const containerWidth = Math.min(window.innerWidth * 0.95, 1000);
+      const pageHeight = containerWidth * (607 / 1000);
 
-      $('#flipbook').turn('destroy'); // reset before re-initializing
+      $('#flipbook').turn('destroy'); // reset
 
       $('#flipbook').turn({
         width: containerWidth,
         height: pageHeight,
         autoCenter: true,
-        gradients: true,
+        display: 'double', // show spreads
         acceleration: true,
-        display: 'double', // spreads
-        when: {
-          turning: function(e, page, view) {
-            // optional: prevent gaps or shadow issues here
-          }
-        }
+        gradients: true
       });
     }
 
     $(window).on('load resize orientationchange', initFlipbook);
 
-    // arrow key support
+    // arrow keys
     $(document).keydown(function(e) {
-      if (e.key === "ArrowRight") { $('#flipbook').turn('next'); }
-      if (e.key === "ArrowLeft")  { $('#flipbook').turn('previous'); }
+      if (e.key === "ArrowRight") $('#flipbook').turn('next');
+      if (e.key === "ArrowLeft") $('#flipbook').turn('previous');
     });
 
-    // touch swipe support
-    let touchStartX = null;
+    // touch swipe
+    let startX = null;
     $('#flipbook').on('touchstart', function(e) {
-      touchStartX = e.originalEvent.touches[0].clientX;
+      startX = e.originalEvent.touches[0].clientX;
     });
     $('#flipbook').on('touchend', function(e) {
-      if (!touchStartX) return;
-      const touchEndX = e.originalEvent.changedTouches[0].clientX;
-      if (touchEndX - touchStartX > 50) $('#flipbook').turn('previous'); // swipe right
-      if (touchStartX - touchEndX > 50) $('#flipbook').turn('next');     // swipe left
-      touchStartX = null;
+      if (!startX) return;
+      const endX = e.originalEvent.changedTouches[0].clientX;
+      if (endX - startX > 50) $('#flipbook').turn('previous');
+      if (startX - endX > 50) $('#flipbook').turn('next');
+      startX = null;
     });
 
-    // edge click support
+    // edge click
     $('#flipbook').on('click', '.page', function(e) {
-      const pageWidth = $(this).width();
-      const clickX = e.offsetX;
-      if (clickX < pageWidth * 0.2) { // left 20%
-        $('#flipbook').turn('previous');
-      } else if (clickX > pageWidth * 0.8) { // right 20%
-        $('#flipbook').turn('next');
-      }
+      const w = $(this).width();
+      if (e.offsetX < w * 0.2) $('#flipbook').turn('previous');
+      if (e.offsetX > w * 0.8) $('#flipbook').turn('next');
     });
-  </script>
 
+  </script>
 </body>
 </html>
