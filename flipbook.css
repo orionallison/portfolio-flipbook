@@ -9,13 +9,8 @@ body {
   justify-content: center;
 }
 
-#flipbook-container {
-  width: 100%;
-  max-width: 1200px; /* adjust max size if needed */
-}
-
 #flipbook {
-  margin: 0 auto;
+  margin: 20px auto;
 }
 
 .page {
