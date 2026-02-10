@@ -20,43 +20,75 @@
   <div id="flipbook"></div>
 
   <script>
-    $(document).ready(function() {
-      const totalPages = 28; // ← update if you add/remove pages
+    // ===========================
+    // CONFIG: number of pages
+    // ===========================
+    const totalPages = 28;
 
-      // Generate pages dynamically
-      for (let i = 0; i < totalPages; i++) {
-        const pageNumber = String(i).padStart(3, '0');
-        const page = document.createElement('div');
-        page.className = 'page';
+    // ===========================
+    // DYNAMIC PAGE CREATION
+    // ===========================
+    for (let i = 0; i < totalPages; i++) {
+      const pageNumber = String(i).padStart(3, '0');
+      const page = document.createElement('div');
+      page.className = 'page';
 
-        const img = document.createElement('img');
-        img.src = `pages/page-${pageNumber}.png`;
-        img.alt = `Page ${i + 1}`;
+      const img = document.createElement('img');
+      img.src = `pages/page-${pageNumber}.png`;
+      img.alt = `Page ${i + 1}`;
 
-        page.appendChild(img);
-        document.getElementById('flipbook').appendChild(page);
+      page.appendChild(img);
+      document.getElementById('flipbook').appendChild(page);
+    }
+
+    // ===========================
+    // INITIALIZE TURN.JS
+    // ===========================
+    const flipbook = $('#flipbook').turn({
+      width: $('#flipbook').width(),
+      height: $('#flipbook').height(),
+      display: 'double',
+      autoCenter: false,
+      gradients: true,
+      acceleration: true,
+      elevation: 50,
+      turnCorners: 'bl,br,tl,tr', // enable click on all corners
+      duration: 600
+    });
+
+    // ===========================
+    // KEYBOARD NAVIGATION
+    // ===========================
+    function handleKeys(e) {
+      switch(e.key) {
+        case "ArrowLeft":
+          $('#flipbook').turn('previous');
+          e.preventDefault();
+          break;
+        case "ArrowRight":
+          $('#flipbook').turn('next');
+          e.preventDefault();
+          break;
       }
+    }
 
-      // Initialize Turn.js
-      $('#flipbook').turn({
-        width: $('#flipbook').width(),
-        height: $('#flipbook').height(),
-        autoCenter: false,
-        gradients: true,
-        acceleration: true,
-        display: 'double',
-        elevation: 50,
-        page: 1,
-        duration: 600,
-        turnCorners: 'bl,br,tl,tr',
-        hardwareAcceleration: true
-      });
+    // Focus flipbook automatically and bind keys
+    $(document).ready(function() {
+      $('#flipbook').attr('tabindex', 0); // allow focus
+      $('#flipbook').focus();
+      $('#flipbook').on('keydown', handleKeys);
 
-      // Arrow key navigation
-      $(document).keydown(function(e){
-        if(e.keyCode == 37) $('#flipbook').turn('previous'); // left arrow
-        if(e.keyCode == 39) $('#flipbook').turn('next');     // right arrow
-      });
+      // Ensure arrow keys work even if iframe is embedded
+      $(window).on('keydown', handleKeys);
+    });
+
+    // ===========================
+    // RESPONSIVE RESIZE
+    // ===========================
+    $(window).resize(function() {
+      const containerWidth = Math.min($(window).width() - 40, 1000); // max 1000px, 20px margin each side
+      const pageHeight = containerWidth / 1.647; // preserve spread ratio
+      $('#flipbook').turn('size', containerWidth, pageHeight);
     });
   </script>
 
