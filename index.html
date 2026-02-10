@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio Flipbook</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="flipbook.css">
+
+  <!-- jQuery (required for Turn.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <!-- Turn.js -->
+  <script src="turnjs/turn.min.js"></script>
+</head>
+
+<body>
+
+  <div id="flipbook"></div>
+
+  <script>
+    /* ===========================
+       EDIT ONLY THIS LINE
+       =========================== */
+
+    const totalPages = 28; // ← CHANGE THIS NUMBER
+
+    /* ===========================
+       DO NOT EDIT BELOW
+       =========================== */
+
+    for (let i = 0; i < totalPages; i++) {
+      const pageNumber = String(i).padStart(3, '0');
+      const page = document.createElement('div');
+      page.className = 'page';
+
+      const img = document.createElement('img');
+      img.src = `pages/page-${pageNumber}.png`;
+      img.alt = `Page ${i + 1}`;
+
+      page.appendChild(img);
+      document.getElementById('flipbook').appendChild(page);
+    }
+
+    $('#flipbook').turn({
+      width: 1000,
+      height: 607,
+      autoCenter: false
+    });
+  </script>
+
+</body>
+</html>

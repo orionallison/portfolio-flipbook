@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: transparent;
+}
+
+/* Flipbook container */
+#flipbook {
+  width: 1000px;
+  height: 607px;
+  margin: 0 auto;
+}
+
+/* Individual pages */
+.page {
+  background: white;
+}
+
+/* Page images */
+.page img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
