@@ -24,7 +24,7 @@
     const totalPages = 28;
     const $flipbook = $('#flipbook');
 
-    // Generate pages
+    // Generate pages once
     for (let i = 0; i < totalPages; i++) {
       const pageNumber = String(i).padStart(3, '0');
       const page = $('<div class="page"></div>');
@@ -34,36 +34,29 @@
       $flipbook.append(page);
     }
 
-    // Initialize Turn.js after wrapper width is available
+    // Initialize flipbook
     function initFlipbook() {
       const wrapperWidth = $('#flipbook-wrapper').width();
-      const aspectRatio = 1000 / 607; // original spread ratio
+      const aspectRatio = 1000 / 607;
       const height = wrapperWidth / aspectRatio;
 
       // Determine display mode: single on mobile, double on desktop
       const displayMode = (wrapperWidth < 800) ? 'single' : 'double';
 
+      // Initialize or resize flipbook
       if ($flipbook.data('turn')) {
-        $flipbook.turn('destroy').empty(); // reset if already initialized
-        // regenerate pages
-        for (let i = 0; i < totalPages; i++) {
-          const pageNumber = String(i).padStart(3, '0');
-          const page = $('<div class="page"></div>');
-          const img = $('<img>').attr('src', `pages/page-${pageNumber}.png`)
-                                .attr('alt', `Page ${i + 1}`);
-          page.append(img);
-          $flipbook.append(page);
-        }
+        $flipbook.turn('size', wrapperWidth, height); // just resize
+        $flipbook.turn('display', displayMode);
+      } else {
+        $flipbook.turn({
+          width: wrapperWidth,
+          height: height,
+          autoCenter: true,
+          display: displayMode,
+          gradients: true,
+          acceleration: true
+        });
       }
-
-      $flipbook.turn({
-        width: wrapperWidth,
-        height: height,
-        autoCenter: true,
-        display: displayMode,
-        gradients: true,
-        acceleration: true
-      });
     }
 
     // Initialize on load
@@ -71,11 +64,16 @@
     // Resize dynamically
     $(window).on('resize', initFlipbook);
 
-    // Arrow keys
+    // Arrow keys (always works now)
     $(document).keydown(function(e) {
-      if ($flipbook.data('turn')) {
-        if (e.key === "ArrowRight") $flipbook.turn('next');
-        if (e.key === "ArrowLeft") $flipbook.turn('previous');
+      if (!$flipbook.data('turn')) return;
+      switch(e.key) {
+        case "ArrowRight":
+          $flipbook.turn('next');
+          break;
+        case "ArrowLeft":
+          $flipbook.turn('previous');
+          break;
       }
     });
   </script>
