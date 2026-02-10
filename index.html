@@ -24,7 +24,7 @@
     const totalPages = 28;
     const $flipbook = $('#flipbook');
 
-    // Generate pages once
+    // Generate pages
     for (let i = 0; i < totalPages; i++) {
       const pageNumber = String(i).padStart(3, '0');
       const page = $('<div class="page"></div>');
@@ -40,12 +40,11 @@
       const aspectRatio = 1000 / 607;
       const height = wrapperWidth / aspectRatio;
 
-      // Determine display mode: single on mobile, double on desktop
+      // Decide display mode: single for small screens
       const displayMode = (wrapperWidth < 800) ? 'single' : 'double';
 
-      // Initialize or resize flipbook
       if ($flipbook.data('turn')) {
-        $flipbook.turn('size', wrapperWidth, height); // just resize
+        $flipbook.turn('size', wrapperWidth, height);
         $flipbook.turn('display', displayMode);
       } else {
         $flipbook.turn({
@@ -54,26 +53,45 @@
           autoCenter: true,
           display: displayMode,
           gradients: true,
-          acceleration: true
+          acceleration: true,
+          when: {
+            turning: function(event, page, view) {
+              // prevent skipping
+              if (page < 1) $flipbook.turn('page', 1);
+              if (page > totalPages) $flipbook.turn('page', totalPages);
+            }
+          }
         });
       }
     }
 
-    // Initialize on load
-    $(window).on('load', initFlipbook);
-    // Resize dynamically
-    $(window).on('resize', initFlipbook);
+    // Init on load and resize
+    $(window).on('load resize', initFlipbook);
 
-    // Arrow keys (always works now)
+    // Arrow key navigation
     $(document).keydown(function(e) {
       if (!$flipbook.data('turn')) return;
       switch(e.key) {
         case "ArrowRight":
+        case "Right":
           $flipbook.turn('next');
           break;
         case "ArrowLeft":
+        case "Left":
           $flipbook.turn('previous');
           break;
+      }
+    });
+
+    // Edge click navigation
+    $('#flipbook').on('click', '.page', function(e) {
+      const pageOffset = $(this).offset();
+      const clickX = e.pageX - pageOffset.left;
+      const width = $(this).width();
+      if (clickX < width * 0.25) {
+        $flipbook.turn('previous');
+      } else if (clickX > width * 0.75) {
+        $flipbook.turn('next');
       }
     });
   </script>
