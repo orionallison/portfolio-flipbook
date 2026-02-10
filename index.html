@@ -5,13 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portfolio Flipbook</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="flipbook.css">
-
-  <!-- jQuery (required for Turn.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-  <!-- Turn.js -->
   <script src="turnjs/turn.min.js"></script>
 </head>
 
@@ -20,14 +15,8 @@
   <div id="flipbook"></div>
 
   <script>
-    // ===========================
-    // CONFIG: number of pages
-    // ===========================
     const totalPages = 28;
 
-    // ===========================
-    // DYNAMIC PAGE CREATION
-    // ===========================
     for (let i = 0; i < totalPages; i++) {
       const pageNumber = String(i).padStart(3, '0');
       const page = document.createElement('div');
@@ -41,54 +30,44 @@
       document.getElementById('flipbook').appendChild(page);
     }
 
-    // ===========================
-    // INITIALIZE TURN.JS
-    // ===========================
-    const flipbook = $('#flipbook').turn({
-      width: $('#flipbook').width(),
-      height: $('#flipbook').height(),
-      display: 'double',
-      autoCenter: false,
-      gradients: true,
-      acceleration: true,
-      elevation: 50,
-      turnCorners: 'bl,br,tl,tr', // enable click on all corners
-      duration: 600
-    });
+    function initFlipbook() {
+      const container = $('#flipbook');
+      const containerWidth = container.parent().width(); // use parent width for responsive scaling
+      const aspectRatio = 1000 / 607; // spread aspect ratio
+      const height = containerWidth / aspectRatio;
 
-    // ===========================
-    // KEYBOARD NAVIGATION
-    // ===========================
-    function handleKeys(e) {
-      switch(e.key) {
-        case "ArrowLeft":
-          $('#flipbook').turn('previous');
-          e.preventDefault();
-          break;
-        case "ArrowRight":
-          $('#flipbook').turn('next');
-          e.preventDefault();
-          break;
-      }
+      container.turn({
+        width: containerWidth,
+        height: height,
+        autoCenter: true,
+        gradients: true,
+        acceleration: true,
+        display: 'double',  // show spreads
+        when: {
+          turned: function(e, page) {
+            // optional: you can trigger any events when pages turn
+          }
+        }
+      });
     }
 
-    // Focus flipbook automatically and bind keys
-    $(document).ready(function() {
-      $('#flipbook').attr('tabindex', 0); // allow focus
-      $('#flipbook').focus();
-      $('#flipbook').on('keydown', handleKeys);
+    $(window).on('load resize', function() {
+      if ($('#flipbook').data('turn')) {
+        $('#flipbook').turn('destroy').empty(); // destroy previous instance
+      }
 
-      // Ensure arrow keys work even if iframe is embedded
-      $(window).on('keydown', handleKeys);
+      initFlipbook();
     });
 
-    // ===========================
-    // RESPONSIVE RESIZE
-    // ===========================
-    $(window).resize(function() {
-      const containerWidth = Math.min($(window).width() - 40, 1000); // max 1000px, 20px margin each side
-      const pageHeight = containerWidth / 1.647; // preserve spread ratio
-      $('#flipbook').turn('size', containerWidth, pageHeight);
+    // Keyboard navigation
+    $(document).keydown(function(e) {
+      if ($('#flipbook').data('turn')) {
+        if (e.key === "ArrowRight") {
+          $('#flipbook').turn('next');
+        } else if (e.key === "ArrowLeft") {
+          $('#flipbook').turn('previous');
+        }
+      }
     });
   </script>
 
