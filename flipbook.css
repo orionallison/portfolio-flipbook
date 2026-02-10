@@ -12,11 +12,35 @@ body {
   width: 1000px;
   height: 607px;
   margin: 0 auto;
+  position: relative;
+  overflow: visible;
 }
 
 /* Individual pages */
 .page {
   background: white;
+  position: relative;
+}
+
+/* Shadows outside pages */
+.page::before,
+.page::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 15px;
+  pointer-events: none;
+}
+
+.page::before {
+  left: -2px;
+  box-shadow: -3px 0 8px rgba(0,0,0,0.03);
+}
+
+.page::after {
+  right: -2px;
+  box-shadow: 3px 0 8px rgba(0,0,0,0.03);
 }
 
 /* Page images */
@@ -24,4 +48,57 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  image-rendering: auto;
+  image-rendering: optimizeQuality;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Remove Turn.js internal spacing/gaps */
+#flipbook .turn-page,
+#flipbook .turn-page-wrapper {
+  margin: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+
+/* Edge click zones for desktop */
+#flipbook::before,
+#flipbook::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  cursor: pointer;
+  z-index: 10;
+}
+
+#flipbook::before {
+  left: 0;
+}
+
+#flipbook::after {
+  right: 0;
+}
+
+/* Hover highlight for desktop */
+@media (hover: hover) and (pointer: fine) {
+  #flipbook::before:hover,
+  #flipbook::after:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+}
+
+/* Responsive mobile scaling */
+@media (max-width: 1024px) {
+  #flipbook {
+    width: 100%;
+    height: auto;
+  }
+
+  #flipbook .page img {
+    width: 100%;
+    height: auto;
+  }
 }
