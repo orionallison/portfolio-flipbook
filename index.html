@@ -8,11 +8,14 @@
   <!-- CSS -->
   <link rel="stylesheet" href="flipbook.css">
 
-  <!-- jQuery (required for Turn.js) -->
+  <!-- jQuery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   <!-- Turn.js -->
   <script src="turnjs/turn.min.js"></script>
+
+  <!-- Hammer.js for swipe/tap -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 </head>
 <body>
 
@@ -40,7 +43,6 @@
       const aspectRatio = 1000 / 607;
       const height = wrapperWidth / aspectRatio;
 
-      // Decide display mode: single for small screens
       const displayMode = (wrapperWidth < 800) ? 'single' : 'double';
 
       if ($flipbook.data('turn')) {
@@ -56,7 +58,6 @@
           acceleration: true,
           when: {
             turning: function(event, page, view) {
-              // prevent skipping
               if (page < 1) $flipbook.turn('page', 1);
               if (page > totalPages) $flipbook.turn('page', totalPages);
             }
@@ -65,23 +66,28 @@
       }
     }
 
-    // Init on load and resize
     $(window).on('load resize', initFlipbook);
 
-    // Arrow key navigation
-    $(document).keydown(function(e) {
-      if (!$flipbook.data('turn')) return;
-      switch(e.key) {
-        case "ArrowRight":
-        case "Right":
-          $flipbook.turn('next');
-          break;
-        case "ArrowLeft":
-        case "Left":
-          $flipbook.turn('previous');
-          break;
-      }
-    });
+    // Arrow keys navigation (force focus on flipbook)
+    function bindArrowKeys() {
+      $(document).off('keydown.flipbook'); // prevent duplicate bindings
+      $(document).on('keydown.flipbook', function(e) {
+        if (!$flipbook.data('turn')) return;
+        switch(e.key) {
+          case "ArrowRight":
+          case "Right":
+            $flipbook.turn('next');
+            e.preventDefault();
+            break;
+          case "ArrowLeft":
+          case "Left":
+            $flipbook.turn('previous');
+            e.preventDefault();
+            break;
+        }
+      });
+    }
+    bindArrowKeys();
 
     // Edge click navigation
     $('#flipbook').on('click', '.page', function(e) {
@@ -93,6 +99,16 @@
       } else if (clickX > width * 0.75) {
         $flipbook.turn('next');
       }
+    });
+
+    // Swipe / tap for mobile using Hammer.js
+    const hammer = new Hammer(document.getElementById('flipbook-wrapper'));
+    hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
+    hammer.on('swipeleft', function() {
+      $flipbook.turn('next');
+    });
+    hammer.on('swiperight', function() {
+      $flipbook.turn('previous');
     });
   </script>
 </body>
