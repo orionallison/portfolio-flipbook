@@ -5,16 +5,15 @@
 body {
   margin: 0;
   background: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; /* top-center initially, scaling handles vertical */
-  min-height: 100vh;
+  overflow: hidden; /* prevent scrollbars */
+  height: 100vh;
+  width: 100vw;
+  position: relative;
 }
 
 #flipbook {
   width: 1000px;
   height: 607px;
-  margin: 0 auto;
 }
 
 .page {
