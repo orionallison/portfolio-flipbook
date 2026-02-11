@@ -6,20 +6,13 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f2f2f2;
+  background: transparent;
   overflow: hidden; /* prevents scrollbars */
 }
 
-#flipbook-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 #flipbook {
-  /* original size, will be scaled by JS */
+  width: 1000px;
+  height: 607px;
 }
 
 .page {
