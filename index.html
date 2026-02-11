@@ -43,12 +43,7 @@
       autoCenter: false,
       gradients: true,
       acceleration: true,
-      display: 'double', // show spreads
-      when: {
-        turned: function(event, page, view) {
-          // optional: you can add events here if needed
-        }
-      }
+      display: 'double'
     });
 
     // Arrow key navigation
@@ -71,7 +66,7 @@
       }
     });
 
-    // Responsive scaling based on smaller dimension
+    // Responsive scaling based on smaller dimension, fully centered
     function scaleFlipbook() {
       const windowWidth = $(window).width();
       const windowHeight = $(window).height();
@@ -80,9 +75,22 @@
 
       const scale = Math.min(windowWidth / originalWidth, windowHeight / originalHeight, 1);
 
+      const flipbookWidth = originalWidth * scale;
+      const flipbookHeight = originalHeight * scale;
+
       $('#flipbook').css({
         transform: 'scale(' + scale + ')',
-        transformOrigin: 'top center'
+        transformOrigin: 'top left'
+      });
+
+      // Center horizontally and vertically
+      const left = (windowWidth - flipbookWidth) / 2;
+      const top = (windowHeight - flipbookHeight) / 2;
+
+      $('#flipbook').css({
+        position: 'absolute',
+        left: left + 'px',
+        top: top + 'px'
       });
     }
 
