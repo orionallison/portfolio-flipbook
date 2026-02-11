@@ -10,50 +10,86 @@
   <!-- jQuery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-  <!-- Turn.js -->
+  <!-- Turn.js (must exist at /turnjs/turn.min.js in your repo) -->
   <script src="turnjs/turn.min.js"></script>
 </head>
 
 <body>
-
-  <div id="flipbook"></div>
+  <div id="stage">
+    <div id="flipbook"></div>
+  </div>
 
   <script>
     const TOTAL_PAGES = 28;
-    const BASE_WIDTH = 1000;
-    const BASE_HEIGHT = 607;
+    const BASE_W = 1000;
+    const BASE_H = 607;
 
-    const flipbook = document.getElementById('flipbook');
+    function buildPages() {
+      const el = document.getElementById('flipbook');
+      el.innerHTML = '';
+      for (let i = 0; i < TOTAL_PAGES; i++) {
+        const page = document.createElement('div');
+        page.className = 'page';
 
-    // Build pages
-    for (let i = 0; i < TOTAL_PAGES; i++) {
-      const page = document.createElement('div');
-      page.className = 'page';
+        const img = document.createElement('img');
+        img.src = `pages/page-${String(i).padStart(3, '0')}.png`;
+        img.alt = `Page ${i + 1}`;
 
-      const img = document.createElement('img');
-      img.src = `pages/page-${String(i).padStart(3, '0')}.png`;
-      img.alt = `Page ${i + 1}`;
-
-      page.appendChild(img);
-      flipbook.appendChild(page);
+        page.appendChild(img);
+        el.appendChild(page);
+      }
     }
 
-    function resizeFlipbook() {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      const scale = Math.min(w / BASE_WIDTH, h / BASE_HEIGHT);
+    function bestFitSize() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
 
-      $('#flipbook').turn('size', BASE_WIDTH * scale, BASE_HEIGHT * scale);
+      const scale = Math.min(vw / BASE_W, vh / BASE_H);
+      return {
+        w: Math.floor(BASE_W * scale),
+        h: Math.floor(BASE_H * scale)
+      };
     }
 
-    $(document).ready(function () {
-      $('#flipbook').turn({
-        width: BASE_WIDTH,
-        height: BASE_HEIGHT,
+    function initOrResize() {
+      const size = bestFitSize();
+      const $fb = $('#flipbook');
+
+      // If Turn isn't loaded, fail loudly (so you see it in console)
+      if (typeof $fb.turn !== 'function') {
+        console.error('Turn.js did not load. Check: turnjs/turn.min.js path.');
+        return;
+      }
+
+      // If already initialized, just resize safely
+      if ($fb.data('turn')) {
+        $fb.turn('size', size.w, size.h);
+        return;
+      }
+
+      // First-time init
+      $fb.turn({
+        width: size.w,
+        height: size.h,
         display: 'double',
         autoCenter: true,
         gradients: true,
         acceleration: true
       });
+    }
 
-      resizeFlipbook();
+    window.addEventListener('load', () => {
+      buildPages();
+      initOrResize();
+
+      window.addEventListener('resize', initOrResize);
+
+      // Arrow keys
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') $('#flipbook').turn('next');
+        if (e.key === 'ArrowLeft') $('#flipbook').turn('previous');
+      });
+    });
+  </script>
+</body>
+</html>
