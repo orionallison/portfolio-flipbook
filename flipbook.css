@@ -1,29 +1,24 @@
-* {
-  box-sizing: border-box;
-}
-
+/* Full viewport, no background */
 html, body {
-  margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
   background: transparent;
-  overflow: hidden; /* prevents scrollbars */
-  display: flex;
-  justify-content: center; /* horizontal centering */
-  align-items: center;     /* vertical centering */
+  overflow: hidden;
 }
 
+/* Flipbook container */
 #flipbook {
-  width: 1000px;
-  height: 607px;
+  margin: 0 auto;
 }
 
+/* Pages */
 .page {
   background: white;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1); /* subtle shadows */
 }
 
+/* Page images */
 .page img {
   width: 100%;
   height: 100%;
