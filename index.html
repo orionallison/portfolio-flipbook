@@ -20,9 +20,16 @@
   <div id="flipbook"></div>
 
   <script>
-    const totalPages = 28; // number of PNG pages
+    /* ===========================
+       EDIT ONLY THIS LINE
+       =========================== */
+    const totalPages = 28; // ← total PNG pages
 
-    // Generate pages
+    /* ===========================
+       DO NOT EDIT BELOW
+       =========================== */
+
+    // Add pages
     for (let i = 0; i < totalPages; i++) {
       const pageNumber = String(i).padStart(3, '0');
       const page = document.createElement('div');
@@ -36,37 +43,41 @@
       document.getElementById('flipbook').appendChild(page);
     }
 
-    // Initialize Turn.js
+    // Initialize Turn.js flipbook
     $('#flipbook').turn({
       width: 1000,
       height: 607,
       autoCenter: false,
       gradients: true,
       acceleration: true,
-      display: 'double'
-    });
-
-    // Arrow key navigation
-    $(document).keydown(function(e){
-      if(e.keyCode == 37) { // left
-        $('#flipbook').turn('previous');
-      } else if(e.keyCode == 39) { // right
-        $('#flipbook').turn('next');
+      display: 'double',       // spreads by default
+      when: {
+        turning: function(e, page, view) {
+          // optional: callback for page turning
+        }
       }
     });
 
-    // Edge click / swipe
-    $('#flipbook').on('click touchstart', '.page', function(e) {
-      const offsetX = e.originalEvent.touches ? e.originalEvent.touches[0].pageX : e.pageX;
-      const width = $(this).width();
-      if(offsetX < width / 2) {
+    // Enable arrow key navigation
+    $(document).keydown(function(e) {
+      if(e.key === "ArrowRight") $('#flipbook').turn('next');
+      if(e.key === "ArrowLeft") $('#flipbook').turn('previous');
+    });
+
+    // Enable click/tap on page edges
+    $(document).on('click', '#flipbook .page', function(e) {
+      const flipbookOffset = $('#flipbook').offset().left;
+      const clickX = e.pageX - flipbookOffset;
+      const width = $('#flipbook').width();
+
+      if(clickX < width / 2) {
         $('#flipbook').turn('previous');
       } else {
         $('#flipbook').turn('next');
       }
     });
 
-    // Responsive scaling based on smaller dimension, fully centered
+    // Auto-scale to fit screen (based on smaller dimension)
     function scaleFlipbook() {
       const windowWidth = $(window).width();
       const windowHeight = $(window).height();
@@ -75,22 +86,9 @@
 
       const scale = Math.min(windowWidth / originalWidth, windowHeight / originalHeight, 1);
 
-      const flipbookWidth = originalWidth * scale;
-      const flipbookHeight = originalHeight * scale;
-
       $('#flipbook').css({
         transform: 'scale(' + scale + ')',
-        transformOrigin: 'top left'
-      });
-
-      // Center horizontally and vertically
-      const left = (windowWidth - flipbookWidth) / 2;
-      const top = (windowHeight - flipbookHeight) / 2;
-
-      $('#flipbook').css({
-        position: 'absolute',
-        left: left + 'px',
-        top: top + 'px'
+        transformOrigin: 'center center'
       });
     }
 
