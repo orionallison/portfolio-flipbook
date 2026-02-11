@@ -8,7 +8,7 @@
   <!-- CSS -->
   <link rel="stylesheet" href="flipbook.css">
 
-  <!-- jQuery -->
+  <!-- jQuery (required for Turn.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   <!-- Turn.js -->
@@ -20,9 +20,7 @@
   <div id="flipbook"></div>
 
   <script>
-    const totalPages = 28; // number of pages
-
-    const flipbook = document.getElementById('flipbook');
+    const totalPages = 28; // number of PNG pages
 
     // Generate pages
     for (let i = 0; i < totalPages; i++) {
@@ -35,41 +33,65 @@
       img.alt = `Page ${i + 1}`;
 
       page.appendChild(img);
-      flipbook.appendChild(page);
+      document.getElementById('flipbook').appendChild(page);
     }
 
-    function initFlipbook() {
-      $('#flipbook').turn({
-        width: 1000,
-        height: 607,
-        autoCenter: true,
-        gradients: true,
-        acceleration: true,
-        display: 'double'
-      });
-    }
-
-    $(document).ready(function() {
-      initFlipbook();
-
-      // Arrow key navigation
-      $(document).keydown(function(e) {
-        if (e.key === "ArrowRight") $('#flipbook').turn('next');
-        if (e.key === "ArrowLeft") $('#flipbook').turn('previous');
-      });
-
-      // Responsive scaling based on window width
-      function scaleFlipbook() {
-        const windowWidth = $(window).width();
-        const scale = Math.min(windowWidth / 1000, 1); // original flipbook width = 1000px
-        $('#flipbook').css({
-          transform: 'scale(' + scale + ')',
-          transformOrigin: 'top center'
-        });
+    // Initialize Turn.js
+    $('#flipbook').turn({
+      width: 1000,
+      height: 607,
+      autoCenter: false,
+      gradients: true,
+      acceleration: true,
+      display: 'double', // show spreads
+      when: {
+        turned: function(event, page, view) {
+          // optional: you can add events here if needed
+        }
       }
+    });
 
+    // Arrow key navigation
+    $(document).keydown(function(e){
+      if(e.keyCode == 37) { // left
+        $('#flipbook').turn('previous');
+      } else if(e.keyCode == 39) { // right
+        $('#flipbook').turn('next');
+      }
+    });
+
+    // Edge click / swipe
+    $('#flipbook').on('click touchstart', '.page', function(e) {
+      const offsetX = e.originalEvent.touches ? e.originalEvent.touches[0].pageX : e.pageX;
+      const width = $(this).width();
+      if(offsetX < width / 2) {
+        $('#flipbook').turn('previous');
+      } else {
+        $('#flipbook').turn('next');
+      }
+    });
+
+    // Responsive scaling based on smaller dimension
+    function scaleFlipbook() {
+      const windowWidth = $(window).width();
+      const windowHeight = $(window).height();
+      const originalWidth = 1000;
+      const originalHeight = 607;
+
+      const scale = Math.min(windowWidth / originalWidth, windowHeight / originalHeight, 1);
+
+      $('#flipbook').css({
+        transform: 'scale(' + scale + ')',
+        transformOrigin: 'top center'
+      });
+    }
+
+    // Initial scaling
+    scaleFlipbook();
+
+    // Rescale on window resize
+    $(window).on('resize', function() {
       scaleFlipbook();
-      $(window).resize(scaleFlipbook);
     });
   </script>
 
