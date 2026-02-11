@@ -41,15 +41,19 @@
     }
 
     function bestFitSize() {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+  const stage = document.getElementById('stage');
+  const rect = stage.getBoundingClientRect();
 
-      const scale = Math.min(vw / BASE_W, vh / BASE_H);
-      return {
-        w: Math.floor(BASE_W * scale),
-        h: Math.floor(BASE_H * scale)
-      };
-    }
+  const vw = rect.width;
+  const vh = rect.height;
+
+  const scale = Math.min(vw / BASE_W, vh / BASE_H);
+  return {
+    w: Math.floor(BASE_W * scale),
+    h: Math.floor(BASE_H * scale)
+  };
+}
+
 
     function initOrResize() {
       const size = bestFitSize();
@@ -93,4 +97,5 @@
   </script>
 </body>
 </html>
+
 
