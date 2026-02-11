@@ -17,13 +17,11 @@
 
 <body>
 
-  <!-- Wrapper to scale flipbook -->
-  <div id="flipbook-wrapper">
-    <div id="flipbook"></div>
-  </div>
+  <div id="flipbook"></div>
 
   <script>
-    const totalPages = 28; // ← Change if needed
+    const totalPages = 28; // number of pages
+
     const flipbook = document.getElementById('flipbook');
 
     // Generate pages
@@ -40,7 +38,6 @@
       flipbook.appendChild(page);
     }
 
-    // Initialize Turn.js
     function initFlipbook() {
       $('#flipbook').turn({
         width: 1000,
@@ -61,26 +58,17 @@
         if (e.key === "ArrowLeft") $('#flipbook').turn('previous');
       });
 
-      // Responsive scaling
+      // Responsive scaling based on window width
       function scaleFlipbook() {
-        const wrapper = $('#flipbook-wrapper');
-        const fb = $('#flipbook');
-
-        const wrapperWidth = wrapper.width();
-        const wrapperHeight = wrapper.height();
-
-        const scale = Math.min(wrapperWidth / 1000, wrapperHeight / 607);
-
-        fb.css({
+        const windowWidth = $(window).width();
+        const scale = Math.min(windowWidth / 1000, 1); // original flipbook width = 1000px
+        $('#flipbook').css({
           transform: 'scale(' + scale + ')',
           transformOrigin: 'top center'
         });
       }
 
-      // Initial scale
       scaleFlipbook();
-
-      // Rescale on window resize
       $(window).resize(scaleFlipbook);
     });
   </script>
