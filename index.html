@@ -8,7 +8,7 @@
   <!-- CSS -->
   <link rel="stylesheet" href="flipbook.css">
 
-  <!-- jQuery (required for Turn.js) -->
+  <!-- jQuery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   <!-- Turn.js -->
@@ -20,68 +20,40 @@
   <div id="flipbook"></div>
 
   <script>
-  window.onload = function() {
-    const totalPages = 28;
+    const totalPages = 28; // ← Change this if needed
     const flipbook = document.getElementById('flipbook');
-
-    // Clear old content
-    flipbook.innerHTML = '';
 
     // Generate pages
     for (let i = 0; i < totalPages; i++) {
-      const div = document.createElement('div');
-      div.className = 'page';
+      const pageNumber = String(i).padStart(3, '0');
+      const page = document.createElement('div');
+      page.className = 'page';
 
       const img = document.createElement('img');
-      img.src = `pages/page-${String(i).padStart(3, '0')}.png`;
+      img.src = `pages/page-${pageNumber}.png`;
       img.alt = `Page ${i + 1}`;
 
-      div.appendChild(img);
-      flipbook.appendChild(div);
+      page.appendChild(img);
+      flipbook.appendChild(page);
     }
 
-    // Initialize Turn.js only if not already initialized
-    if (!$('#flipbook').data('turn')) {
+    // Initialize Turn.js
+    $(document).ready(function() {
       $('#flipbook').turn({
-        width: Math.min(window.innerWidth * 0.95, 1000), // responsive width
-        height: Math.min(window.innerWidth * 0.95, 1000) * (607 / 1000), // maintain aspect ratio
+        width: 1000,      // adjust max width
+        height: 607,      // adjust aspect ratio
         autoCenter: true,
-        display: 'double', // show spreads
         gradients: true,
         acceleration: true,
-        elevation: 50
+        display: 'double'
       });
 
-      // Keyboard navigation
+      // Arrow key navigation
       $(document).keydown(function(e) {
         if (e.key === "ArrowRight") $('#flipbook').turn('next');
         if (e.key === "ArrowLeft") $('#flipbook').turn('previous');
       });
-
-      // Swipe/edge click for mobile
-      let startX = 0;
-      flipbook.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-      flipbook.addEventListener('touchend', e => {
-        const diff = e.changedTouches[0].clientX - startX;
-        if (diff > 50) $('#flipbook').turn('previous'); // swipe right
-        if (diff < -50) $('#flipbook').turn('next');    // swipe left
-      });
-
-      // Click edges
-      flipbook.addEventListener('click', e => {
-        const rect = flipbook.getBoundingClientRect();
-        if (e.clientX < rect.left + 0.2 * rect.width) $('#flipbook').turn('previous');
-        if (e.clientX > rect.right - 0.2 * rect.width) $('#flipbook').turn('next');
-      });
-    }
-
-    // Recalculate on resize
-    window.addEventListener('resize', () => {
-      const w = Math.min(window.innerWidth * 0.95, 1000);
-      const h = w * (607 / 1000);
-      $('#flipbook').turn('size', w, h);
     });
-  };
   </script>
 
 </body>
