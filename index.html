@@ -27,7 +27,7 @@
     function buildPages() {
       const el = document.getElementById('flipbook');
       el.innerHTML = '';
-      for (let i = 0; i < TOTAL_PAGES; i++) {
+      for (let i = 1; i <= TOTAL_PAGES; i++) {
         const page = document.createElement('div');
         page.className = 'page';
 
@@ -93,3 +93,4 @@
   </script>
 </body>
 </html>
+
