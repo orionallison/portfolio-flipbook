@@ -3,12 +3,12 @@
    -------------------------- */
 @media (hover: hover){
   html{
-    cursor: url("cursor.png") 12 12, auto;
+    cursor: url("cursor.png") 8 8, auto;
   }
 
   /* optional: treat links/buttons as pointer if you ever add UI */
   a, button, [role="button"]{
-    cursor: url("cursor.png") 12 12, pointer;
+    cursor: url("cursor.png") 8 8, pointer;
   }
 }
 
@@ -42,3 +42,4 @@ html, body {
   user-select: none;
   -webkit-user-drag: none;
 }
+
