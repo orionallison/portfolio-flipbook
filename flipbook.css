@@ -1,3 +1,17 @@
+/* --------------------------
+   CUSTOM CURSOR (DESKTOP ONLY)
+   -------------------------- */
+@media (hover: hover){
+  html{
+    cursor: url("cursor.png") 12 12, auto;
+  }
+
+  /* optional: treat links/buttons as pointer if you ever add UI */
+  a, button, [role="button"]{
+    cursor: url("cursor.png") 12 12, pointer;
+  }
+}
+
 html, body {
   width: 100%;
   height: 100%;
