@@ -6,13 +6,12 @@
     cursor: url("cursor.png") 8 8, auto;
   }
 
-  /* optional: treat links/buttons as pointer if you ever add UI */
   a, button, [role="button"]{
     cursor: url("cursor.png") 8 8, pointer;
   }
 }
 
-html, body {
+html, body{
   width: 100%;
   height: 100%;
   margin: 0;
@@ -21,7 +20,7 @@ html, body {
 }
 
 /* centers the flipbook in the viewport */
-#stage {
+#stage{
   width: 100%;
   height: 100%;
   display: flex;
@@ -30,11 +29,18 @@ html, body {
   background: transparent;
 }
 
-.page {
-  background: white;       /* your pages are white */
+/* Turn.js stability hints (reduce overlap artifacts on zoom) */
+#flipbook, .page{
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.page img {
+.page{
+  background: white;
+}
+
+.page img{
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -42,4 +48,3 @@ html, body {
   user-select: none;
   -webkit-user-drag: none;
 }
-
