@@ -27,13 +27,18 @@
     function buildPages() {
       const el = document.getElementById('flipbook');
       el.innerHTML = '';
+
+      // IMPORTANT: your files are page-001..page-028
       for (let i = 1; i <= TOTAL_PAGES; i++) {
         const page = document.createElement('div');
         page.className = 'page';
 
         const img = document.createElement('img');
         img.src = `pages/page-${String(i).padStart(3, '0')}.png`;
-        img.alt = `Page ${i + 1}`;
+        img.alt = `Page ${i}`;
+
+        // prevent drag ghosting
+        img.draggable = false;
 
         page.appendChild(img);
         el.appendChild(page);
@@ -41,31 +46,37 @@
     }
 
     function bestFitSize() {
-  const stage = document.getElementById('stage');
-  const rect = stage.getBoundingClientRect();
+      const stage = document.getElementById('stage');
+      const rect = stage.getBoundingClientRect();
 
-  const vw = rect.width;
-  const vh = rect.height;
+      const vw = rect.width;
+      const vh = rect.height;
 
-  const scale = Math.min(vw / BASE_W, vh / BASE_H);
-  return {
-    w: Math.floor(BASE_W * scale),
-    h: Math.floor(BASE_H * scale)
-  };
-}
+      const scale = Math.min(vw / BASE_W, vh / BASE_H);
 
+      // integer sizes reduce page seam / overlap during zoom
+      return {
+        w: Math.max(1, Math.floor(BASE_W * scale)),
+        h: Math.max(1, Math.floor(BASE_H * scale))
+      };
+    }
 
     function initOrResize() {
       const size = bestFitSize();
+      const fbEl = document.getElementById('flipbook');
       const $fb = $('#flipbook');
 
-      // If Turn isn't loaded, fail loudly (so you see it in console)
+      // If Turn isn't loaded, fail loudly
       if (typeof $fb.turn !== 'function') {
         console.error('Turn.js did not load. Check: turnjs/turn.min.js path.');
         return;
       }
 
-      // If already initialized, just resize safely
+      // Always apply explicit CSS size (prevents weird zoom math)
+      fbEl.style.width = size.w + 'px';
+      fbEl.style.height = size.h + 'px';
+
+      // If already initialized, just resize
       if ($fb.data('turn')) {
         $fb.turn('size', size.w, size.h);
         return;
@@ -82,20 +93,32 @@
       });
     }
 
+    // Debounce resize/zoom reflows (critical for browser zoom stability)
+    let raf = null;
+    function requestResize() {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        initOrResize();
+      });
+    }
+
     window.addEventListener('load', () => {
       buildPages();
       initOrResize();
 
-      window.addEventListener('resize', initOrResize);
+      // Zoom triggers resize events; RAF debounce prevents overlap glitches
+      window.addEventListener('resize', requestResize, { passive: true });
+      window.addEventListener('orientationchange', requestResize, { passive: true });
 
-      // Arrow keys
+      // Arrow keys (only when turn is ready)
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') $('#flipbook').turn('next');
-        if (e.key === 'ArrowLeft') $('#flipbook').turn('previous');
+        const $fb = $('#flipbook');
+        if (!$fb.data('turn')) return;
+
+        if (e.key === 'ArrowRight') $fb.turn('next');
+        if (e.key === 'ArrowLeft') $fb.turn('previous');
       });
     });
   </script>
 </body>
 </html>
-
-
